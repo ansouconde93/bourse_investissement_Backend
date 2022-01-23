@@ -3,21 +3,21 @@ package bourse.bourse.project.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+import java.util.ArrayList;
+import java.util.List;
+
+@Document
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-@Document
+@Data
 
-public class Societe {
+public class Autority {
     @Id
     private String id;
-    @Indexed(unique = true)
-    private String name;
-    private double actionPrice;
+    private String nom;
+    private boolean susppendu = false; //susppendu = false => cette autory n'est pas suppendu donc fonctionne.
+    private List<Transactions> transactions = new ArrayList<>();
 }

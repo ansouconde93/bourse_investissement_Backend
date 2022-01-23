@@ -7,6 +7,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface TransactionsRepository extends ReactiveMongoRepository<Transactions,String> {
-    public Flux<Transactions> findBySociete(Societe societe);
-    public Mono<Void> deleteBySociete(Societe societe);
+    Flux<Transactions> findBySociete(Societe societe);
+    Mono<Void> deleteBySociete(Societe societe);
 }

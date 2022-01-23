@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 @Service
 @Transactional
 public class TransactionsServiceImp implements TransactionsService {
