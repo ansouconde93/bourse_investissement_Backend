@@ -8,6 +8,5 @@ import reactor.core.publisher.Mono;
 public interface UserRepository extends ReactiveMongoRepository<User, String> {
     Mono<Void> deleteByRoles(Roles role);
 
-    //Mono<User> findUserByEmail(String email);
-    User findUserByEmail(String username);
+    Mono<User> findByEmail(String username);
 }

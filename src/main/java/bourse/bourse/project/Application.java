@@ -1,14 +1,17 @@
 package bourse.bourse.project;
 
 import bourse.bourse.project.entities.*;
+import bourse.bourse.project.security.Login;
+import bourse.bourse.project.security.MyJWTTokenManager;
 import bourse.bourse.project.services.interfaces.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 @SpringBootApplication//(exclude = ReactiveSecurityAutoConfiguration.class)
@@ -40,40 +43,52 @@ public class Application {
 											});
 								});
 					});
-			User user = new User();
-			user.setNom("informatique");
-			user.setPrenom("info");
-			user.setAdresse("tunis");
-			user.setEmail("if5@gmail.com");
-			user.setPassword("fstif5");
-			user.setTelephone(56369214);
-			final int[] i = {0};
-			Stream.of("create","read","update","delete","manager")
-					.forEach(aut ->{
-						Autority autority = new Autority();
-						autority.setId(null);
-						autority.setNom(aut);
-						autorityService.saveAutority(autority)
-								.subscribe(autt ->{
-									Stream.of("root", "admin")
-											.forEach(rol->{
-												Roles role = new Roles();
-												role.setId(null);
-												role.setNom(rol);
+			AtomicReference<User> user = new AtomicReference<>(new User());
+			user.get().setNom("informatique");
+			user.get().setPrenom("info");
+			user.get().setAdresse("tunis");
+			user.get().setEmail("if5@gmail.com");
+			user.get().setPassword("fstif5");
+			user.get().setTelephone(56369214);
+
+			Roles role = new Roles();
+			role.setId(null);
+			role.setNom("ROOT");
+			AtomicInteger i = new AtomicInteger();
+			autorityService.deleteAutoritiesAll()
+					.subscribe(null,null,()->{
+						Stream.of("create","read","update","delete","manager")
+								.forEach(aut ->{
+									Autority autority = new Autority();
+									autority.setId(null);
+									autority.setNom(aut);
+									autorityService.saveAutority(autority)
+											.subscribe(autt ->{
 												role.getAutorities().add(autt);
-												rolesService.saveRole(role)
-														.subscribe(rle ->{
-															user.getRoles().add(rle);
-															i[0]++;
-														});
+												i.getAndIncrement();
+												if (i.get() >= 5){
+													rolesService.deleteRolesAll()
+															.subscribe(null,null,()->{
+																rolesService.saveRole(role)
+																		.subscribe(rle ->{
+																			userService.deleteUserAll()
+																					.subscribe(null, null, ()->{
+																						user.get().getRoles().add(rle);
+																						userService.saveUser(user.get())
+																								.subscribe(user1 -> {
+																									Login usr = new Login();
+																									usr.setUsername(user1.getEmail());
+																									usr.setPassword(user1.getPassword());
+																									//System.out.println(usr);
+																									//System.out.println("\n\n\n\n"+new MyJWTTokenManager().genereteToken(usr)+"\n\n\n\n");
+																								});
+																					});
+																		});
+															});
+												}
 											});
 								});
-						if (i[0] >= 10){
-							userService.saveUser(user)
-									.subscribe(user1 -> { });
-						}
 					});
-
 		};
 	}
 

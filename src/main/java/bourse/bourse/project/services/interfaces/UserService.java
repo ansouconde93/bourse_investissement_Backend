@@ -16,5 +16,4 @@ public interface UserService {
 
     Mono<User> updateUser(String idUser, User user);
 
-    User findUserByEmail(String email);
 }

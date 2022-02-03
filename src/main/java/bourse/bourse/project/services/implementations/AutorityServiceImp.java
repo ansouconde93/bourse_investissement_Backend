@@ -21,6 +21,7 @@ public class AutorityServiceImp implements AutorityService {
 
     @Override
     public Mono<Autority> saveAutority(Autority autority) {
+        //autority.setNom(autority.getNom().toUpperCase());
         return autorityRepository.save(autority);
     }
 
